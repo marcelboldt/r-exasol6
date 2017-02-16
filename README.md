@@ -2,7 +2,7 @@
 # EXASOL 6 R SDK 
 
 This package provides connectivity and more, to work with an EXASOL database within R. The connection
-to the server is implemented via JSON over websockets.
+to the server is implemented via [JSON over websockets](https://github.com/EXASOL/websocket-api).
 
 # Architecture
 
