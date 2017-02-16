@@ -1,0 +1,15 @@
+.Rproj.user
+.Rhistory
+.RData
+src/*.o
+src/*.so
+src/*.dll
+src/R_exasockets.a
+src/base64.a
+src/base64/base64.o
+src/exaResultSet.a
+src/exasockets.a
+src/exasockets/exaResultSet.o
+src/exasockets/exasockets.o
+src/websockets.a
+src/websockets/websockets.o
