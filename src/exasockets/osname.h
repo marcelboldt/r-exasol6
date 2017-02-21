@@ -33,7 +33,7 @@ Marcel Boldt <marcel.boldt@exasol.com>
 
 #ifdef __linux__
   #define OS_NAME "Linux"
-  #include <unistd.h> 
+  #include <unistd.h>
 #elif defined __APPLE__
   #define OS_NAME "MacOS X"
 #elif defined _WIN32_
@@ -49,13 +49,13 @@ Marcel Boldt <marcel.boldt@exasol.com>
 
 class OSTools {
 	public:
-	
+
 	static char* getlogin() {
 
 #ifdef _WIN32
 		char *name = getenv("USERNAME"); // Get environmentvariable for Username
 		if( name != NULL )
-			return name; // Username not found ...
+			return name; // Username not found ..
 #elif defined __linux__
 		return getlogin();
 #endif

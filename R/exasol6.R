@@ -2,8 +2,6 @@
 #' @name exasol6-package
 #' @aliases exasol6
 #' @exportPattern ^[[:alpha:]]+
-#' @import RODBC
-#' @import DBI
 #'
 #' @title R Interface & SDK for the EXASOL Database
 #'

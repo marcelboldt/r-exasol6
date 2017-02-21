@@ -4,7 +4,7 @@ SRC_BASE64=$(wildcard base64/*.cpp)
 SRC_WEBSOCKETS=$(wildcard websockets/*.cpp)
 SRC_R_EXASOCKETS=$(wildcard R_exasockets.cpp)
 
-OBJECTS= base64/base64.o exasockets/exaResultSet.o websockets/websockets.o exasockets/exasockets.o
+OBJECTS= base64/base64.o exasockets/exaResultSet.o websockets/websockets.o exasockets/exasockets.o R_exasockets.o
 OBJ_EXASOCKETS= $(SRC_EXASOCKETS:.cpp=.o)
 OBJ_EXARESULTSET= $(SRC_EXARESULTSET:.cpp=.o)
 OBJ_BASE64= $(SRC_BASE64:.cpp=.o)
@@ -12,22 +12,22 @@ OBJ_WEBSOCKETS= $(SRC_WEBSOCKETS:.cpp=.o)
 OBJ_R_EXASOCKETS= $(SRC_R_EXASOCKETS:.cpp=.o)
 
 
-
+CXX_STD = CXX11
 PKG_CPPFLAGS = -I../windows/openssl-1.1.0c/include -std=c++11
-PKG_LIBS= websockets.a exasockets.a base64.a exaResultSet.a -L../windows/openssl-1.1.0c/lib${R_ARCH} -lssl -lcrypto -lws2_32 -lgdi32 -lcrypt32 -lstdc++
+PKG_LIBS= websockets.a exasockets.a base64.a exaResultSet.a -L../windows/openssl-1.1.0c/lib${R_ARCH} -lws2_32 -lgdi32 -lcrypt32 -lstdc++
 
 
 all: winlibs exasockets.a base64.a websockets.a exaResultSet.a R_exasockets.a $(SHLIB)
 
 winlibs:
-	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/winlibs.R"
-	
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" "../tools/openssl_winlibs.R"
+
 $(SHLIB): exaResultSet.a base64.a websockets.a exasockets.a $(OBJECTS)
 exaResultSet.a: $(OBJ_EXARESULTSET)
 exasockets.a: $(OBJ_EXASOCKETS)
 base64.a: $(OBJ_BASE64)
 websockets.a: $(OBJ_WEBSOCKETS)
-exasockets.a: $(OBJ_R_EXASOCKETS)
+R_exasockets.a: $(OBJ_R_EXASOCKETS)
 
 clean:
-	rm -f $(SHLIB) $(OBJECTS)
+	rm -f $(SHLIB) $(OBJECTS) *.a lib.zip

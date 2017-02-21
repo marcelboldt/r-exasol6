@@ -1,5 +1,5 @@
-PKG_CPPFLAGS=
-PKG_LIBS=  -lssl -lcrypto
+PKG_CPPFLAGS=@CPPFLAGS@
+PKG_LIBS=@LDFLAGS@ @LIBS@
 
 
 OBJECTS=base64/base64.o exasockets/exaResultSet.o websockets/websockets.o exasockets/exasockets.o R_exasockets.o
