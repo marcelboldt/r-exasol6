@@ -21,7 +21,6 @@ The underlying C++ libaries:
 Functionality beyond the method ```exa.connect``` is not yet implemented. The C++ library compiles,
 but the method fails. There is also the problem that Rcpp needs to be loaded.
 
-
 ### Windows
 
 Build of the DLL successful on Windows with Rtools 3.4 (gcc 4.9.3 -i686-posix-dwarf, Built by MinGW-W64 project)
@@ -31,7 +30,6 @@ and Rcpp 0.12.9 - but the test ```con <- exa.connect("192.168.137.10", 8563, "R"
 Error in new_CppObject_xp(fields$.module, fields$.pointer, ...) : 
   c++ exception (unknown reason)
 ```
-
 
 ### Linux
 
