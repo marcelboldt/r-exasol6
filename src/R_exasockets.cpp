@@ -271,6 +271,8 @@ public:
   Rcpp::List R_exec_sql(std::string R_sql) {
     // executes the SQL and returns a dataframe (actually a list which must be converted to df at R level)
     //
+
+BEGIN_RCPP
     const char* sql = R_sql.c_str();
 
     Rcpp::List df;
@@ -317,6 +319,7 @@ public:
       }
     }
     return df;
+END_RCPP
   };
 
   int64_t fetch(Rcpp::List& rs, int resultSetHandle, uint64_t numRows, uint64_t startPosition,
@@ -387,6 +390,8 @@ public:
 
 
 RCPP_MODULE(exa_wscon_module) {
+
+//    Rcpp::Rcout << "This is the module" << std::endl;
 
   class_<R_exa_ws_connection>("R_exa_ws_connection")
   .constructor<const char *, uint16_t, const char *, const char *, const char *>()

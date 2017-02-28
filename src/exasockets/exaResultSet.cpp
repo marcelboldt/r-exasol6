@@ -146,7 +146,7 @@ void exaColumn<T>::appendData(const void *value, const bool null) {
         this->nulls.push_back(null);
     } catch (...) {
         this->data.pop_back();
-        throw "Failed to insert null-value in column";
+        throw std::runtime_error("Failed to insert null-value in column");
     }
 }
 

@@ -58,6 +58,19 @@ Marcel Boldt <marcel.boldt@exasol.com>
 
 #define DRV_NAME "EXASOCKETS 0.1"
 
+
+ struct exas_rsa_bio_create : public std::exception {
+     const char * what() const throw () {
+         return "Error: failed to create RSA bio";
+     }
+ };
+
+ struct exas_rsa_create : public std::exception {
+     const char * what() const throw () {
+         return "Error: failed to create RSA";
+     }
+ };
+
 class exasockets_connection {
 public:
     //! Establishes a connection to EXASOL and returns an exasockets_connection object.
@@ -90,7 +103,7 @@ public:
     static int StringToExaDatatype(const char *str);
 
     static char *ExaDatatypeToString(const int type);
-    
+
     //! Disconnect from EXASOL DB.
     /*! If the connection is still alive, a clean disconnect from EXASOL DB is performed.
      *
@@ -139,14 +152,14 @@ public:
 
     rapidjson::Document resultSet;
     rapidjson::Value *data; // TODO: remove this
-    bool json_debug_output = true; // set to true for cmd line output of all JSON elements
+    bool json_debug_output = false; // set to true for cmd line output of all JSON elements
 
 
 protected:
     static void append_data_from_Rapid_JSON_Document(exaResultSetHandler *rs, const rapidjson::Value &JSONdata);
     static exaResultSetHandler *create_exaResultSetHandler_from_RapidJSON_Document(const rapidjson::Value &JSONresultSet);
-    
-    Websockets_connection *ws_con;
+
+    Websockets_connection *ws_con = nullptr;
     rapidjson::Document d; // for fetch() - the result set containing a dataset
     std::ifstream tfile;
     char *logfile = nullptr; // if nullptr, then the tempfile will be names "EXASockets %timestamp% %random_number%.tmp"

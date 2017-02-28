@@ -31,14 +31,14 @@ Marcel Boldt <marcel.boldt@exasol.com>
 #include "exasockets.h"
 
 
+
 RSA *createRSA(unsigned char *key, bool publ, int len = -1) {
 // http://hayageek.com/rsa-encryption-decryption-openssl-c/
     RSA *rsa = NULL;
     BIO *keybio;
     keybio = BIO_new_mem_buf(key, len);
     if (keybio == NULL) {
-        //printf( "Failed to create key BIO");
-        throw "Failed to create key BIO";
+        throw exas_rsa_bio_create();
     }
     if (publ) {
         rsa = PEM_read_bio_RSAPublicKey(keybio, &rsa, NULL, NULL);
@@ -46,8 +46,7 @@ RSA *createRSA(unsigned char *key, bool publ, int len = -1) {
         rsa = PEM_read_bio_RSAPrivateKey(keybio, &rsa, NULL, NULL);
     }
     if (rsa == NULL) {
-        //printf("Failed to create RSA");
-        throw "Failed to create RSA";
+        throw exas_rsa_create();
     }
 
     return rsa;
@@ -67,6 +66,10 @@ exasockets_connection::exasockets_connection(const char *server, uint16_t port, 
                                              const char *password, int pwd_len, bool autocommit, bool use_compression,
                                              uint64_t sessionId) {
 
+//    Websockets_connection::write_msg_to_file("exasock init");
+//    Websockets_connection::write_msg_to_file(OS_NAME);
+
+
     this->status = false;
     if (this->logfile == nullptr) {
         this->logfile = new char[128];
@@ -78,23 +81,25 @@ exasockets_connection::exasockets_connection(const char *server, uint16_t port, 
         outfile.close();
     }
 
+
     char *host = new char[HOST_NAME_MAX];
     if (gethostname(host, HOST_NAME_MAX) != 0) *host = *clientName;
     const char *driverName = DRV_NAME;
     const char *clientOS = OS_NAME;
-    const char *clientOsUsername = OSTools::getlogin();
+    const char *clientOsUsername =nullptr; // = OSTools::getlogin(); TODO
     if (clientOsUsername == nullptr) {
         clientOsUsername = "unknown";
     }
+
     tfile.open(this->logfile, std::ios::in);
     if(!tfile.is_open()) {
-        throw "EXASockets 90: Couldn't open tempfile.";
+        throw std::runtime_error("EXASockets: Couldn't open tempfile.");
     }
+    Websockets_connection::write_msg_to_file("ws init");
     ws_con = new Websockets_connection(server, port, clientName);
+    if (ws_con == nullptr) throw std::runtime_error("Error: failed to initialise websockets connection");
+    if (!ws_con->connected()) throw std::runtime_error("EXASOCKETS: Websockets connection couldn't be established.");
 
-    if (!ws_con->connected()) {
-        throw "EXASOCKETS: Websockets connection couldn't be established.";
-    }
 
     rapidjson::StringBuffer s;
     rapidjson::Document d;
@@ -117,9 +122,9 @@ exasockets_connection::exasockets_connection(const char *server, uint16_t port, 
 
     d.Parse(ws_receive_data());
     if (!d.IsObject()) {
-        throw "Response parsing failed.";
+        throw std::runtime_error("Response parsing failed.");
     } else if (d.HasMember("exception")) {
-        throw d["exception"]["text"].GetString();
+        throw std::runtime_error(d["exception"]["text"].GetString());
     }
 
 
@@ -145,7 +150,7 @@ exasockets_connection::exasockets_connection(const char *server, uint16_t port, 
 
     srand(10); /* initialize random seed: */ // TODO: another seed, e.g. std::srand(std::time(0));
     if (RSA_public_encrypt(pwd_len, pwd, encrypted, rsa, RSA_PKCS1_PADDING) == -1) {
-        throw "RSA_public_encrypt failed";
+        throw std::runtime_error("RSA_public_encrypt failed");
     }
 //    printf("encrypted: %s\n", encrypted);
 
@@ -230,9 +235,9 @@ exasockets_connection::exasockets_connection(const char *server, uint16_t port, 
 
     d.Parse(ws_receive_data());
     if (!d.IsObject()) {
-        throw "Response parsing failed.";
+        throw std::runtime_error("Response parsing failed.");
     } else if (d.HasMember("exception")) {
-        throw d["exception"]["text"].GetString();
+        throw std::runtime_error(d["exception"]["text"].GetString());
     }
 
     assert(d.HasMember("responseData"));
@@ -286,11 +291,10 @@ int exasockets_connection::disconnect(bool throw_message) {
 
         d.Parse(ws_receive_data());
         if (!d.IsObject()) {
-            throw "Disconnect: Response parsing failed.";
-            // std::cout << "Disconnect: Response parsing failed." << std::endl;
+            throw std::runtime_error("Disconnect: Response parsing failed.");
         } else if (d.HasMember("exception")) {
-            if (throw_message) std::cout << d["exception"]["text"].GetString() << std::endl;
-            return 1; // some errot
+            throw std::runtime_error(d["exception"]["text"].GetString());
+            return 1; // some error
         } else {
             if (throw_message) std::cout << "Disconnected from EXASOL." << std::endl;
             return 0; // all fine
@@ -304,7 +308,7 @@ int exasockets_connection::disconnect(bool throw_message) {
 exasockets_connection::~exasockets_connection() {
 
     disconnect();
-    if (remove(this->logfile) != 0) throw "EXASockets tempfile couldn't be deleted. Look for garbage in the application's working directory.";
+    if (remove(this->logfile) != 0) throw std::runtime_error("EXASockets tempfile couldn't be deleted. Look for garbage in the application's working directory.");
 }
 
 
@@ -416,10 +420,9 @@ int exasockets_connection::update_session_attributes() {
     d.Parse(ws_receive_data());
 
     if (!d.IsObject()) {
-        throw "update_session_attributes: Response parsing failed.";
-        // std::cout << "update_session_attribute: Response parsing failed." << std::endl;
+        throw std::runtime_error("update_session_attributes: Response parsing failed.");
     } else if (d.HasMember("exception")) {
-        std::cout << d["exception"]["text"].GetString() << std::endl;
+        throw std::runtime_error(d["exception"]["text"].GetString());
     } else {
 
         // TODO: parse parameters
@@ -563,10 +566,9 @@ exaResultSetHandler *exasockets_connection::exec_sql(char *sql) {
     this->resultSet.Parse(ws_receive_data());
 
     if (!this->resultSet.IsObject()) { // nonsense received
-        std::cout << "exec_sql: Response parsing failed." << std::endl;
-        throw "exec_sql: Response parsing failed.";
+        throw std::runtime_error("exec_sql: Response parsing failed.");
     } else if (this->resultSet.HasMember("exception")) { // DB had a problem
-        std::cout << this->resultSet["exception"]["text"].GetString() << std::endl;
+        throw std::runtime_error(this->resultSet["exception"]["text"].GetString());
 
     } else { // something useful received
         if (this->resultSet["responseData"].HasMember("results")) { // a result received
@@ -628,10 +630,10 @@ exasockets_connection::fetch(exaResultSetHandler *rs, int resultSetHandle, uint6
     this->d.Parse(ws_receive_data());
 
     if (!this->d.IsObject()) { // nonsense received
-        throw "update_session_attributes: Response parsing failed.";
+        throw std::runtime_error("fetch: Response parsing failed.");
         return -2;
     } else if (this->d.HasMember("exception")) { // DB had a problem
-        std::cout << this->d["exception"]["text"].GetString() << std::endl;
+        throw std::runtime_error(this->d["exception"]["text"].GetString());
         return -1;
     } else { // something useful received
         if (this->d.HasMember("responseData")) { // a resultset received

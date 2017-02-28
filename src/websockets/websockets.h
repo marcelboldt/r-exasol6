@@ -35,6 +35,7 @@ Marcel Boldt <marcel.boldt@exasol.com>
 #include<stdio.h>
 #include<iostream>
 #include<fstream>
+#include<exception>
 
 #ifdef _WIN32
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
@@ -72,11 +73,65 @@ Marcel Boldt <marcel.boldt@exasol.com>
 
 // todo: send stream
 
+struct socket_connect_error : public std::exception {
+    const char * what() const throw () {
+        return "Error connecting to socket";
+    }
+};
+
+struct socket_send_error : public std::exception {
+    const char * what() const throw () {
+        return "Error sending via socket";
+    }
+};
+
+struct socket_recv_error : public std::exception {
+    const char * what() const throw () {
+        return "Error receiving from socket";
+    }
+};
+
+struct ws_unknown_opcode : public std::exception {
+    const char * what() const throw () {
+        return "Error: websockets frame with unknown opcode received";
+    }
+};
+
+struct socket_unexp_close : public std::exception {
+    const char * what() const throw () {
+        return "Error: socket closed unexpectedly";
+    }
+};
+
+struct ws_tempfile_delete : public std::exception {
+    const char * what() const throw () {
+        return "Error: could not remove tempfile";
+    }
+};
+
+struct socket_create_error : public std::exception {
+    const char * what() const throw () {
+        return "Error: could not create socket";
+    }
+};
+
+struct winsock_startup_error : public std::exception {
+    const char * what() const throw () {
+        return "Error: winsock could not be started";
+    }
+};
 
 class Websockets_frame;
 
 class Websockets_connection {
 public:
+    static void write_msg_to_file(std::string msg, std::string name = "errorfile.txt") {
+        std::ofstream outfile;
+        outfile.open(name, std::ios::app);
+        outfile << "Error: " << msg << std::endl;
+        outfile.close();
+    };
+
 	Websockets_connection(const char *server, uint16_t port, const char *host);
 	~Websockets_connection();
 
