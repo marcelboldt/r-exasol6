@@ -34,12 +34,11 @@ Error in new_CppObject_xp(fields$.module, fields$.pointer, ...) :
 ### Linux
 
 For Linux, there is a configure.ac that processes a configure file, generating a src/Makevars
-for a successful compile on R 3.3.2, Ubuntu 16.10. The connect works now, and exec_sql returns a list.
+for a successful compile on R 3.3.2, Ubuntu 16.10. The connect works now, and exec_sql returns a list that can be
+converted to a data.frame on the R level.
 
-Problems:
-
-* the list contains twice as many rows as should
+Problem: 
 * OSTools::getlogin(); causes freeze, so curently commented out in exasockets.cpp line 89
-* R fatal error if result set too huge (whole flights tbl)
+
 
 
