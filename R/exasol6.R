@@ -1,24 +1,26 @@
 #' @docType package
 #' @name exasol6-package
 #' @aliases exasol6
+#' @import methods Rcpp
 #' @exportPattern ^[[:alpha:]]+
+#'
 #'
 #' @title R Interface & SDK for the EXASOL Database
 #'
-#' @description The EXASOL R Package offers interface functionality such as connecting to, querying
-#' and writing into an EXASOL Database (version 5 onwards). It is optimised for massively parallel
-#' reading & writing from and to a multinode cluster. Implemented are DBI compliant methods for database
-#' access, querying and modiifcation. The package integrates with EXASOL's InDB R UDF capabilities, which
-#' allows to deploy and execute R code dynamically from an R application running on a client.
+#' @description The EXASOL 6 R SDK offers interface functionality such as connecting to, querying
+#' and writing into an EXASOL data base It is optimised for fast
+#' reading & writing from and to a multinode cluster, via a Websockets protocol. Implemented are DBI
+#' compliant methods for database access, querying and modiifcation. The package integrates with
+#' EXASOL's InDB R UDF capabilities, which allows to deploy and execute R code dynamically from
+#' an R application running on a client.
 #'
-#' EXASOL is an InMemory RDBMS that runs in a MPP cluster (shared-nothing) environment. Leading the TPC-H
-#' benckmark, it is considered the fastest analytical data warehouse available. The community edition
-#' can be downloaded for free on \url{https://www.exasol.com/portal}.
+#' EXASOL is a high-performance and highly scalable in-memory RDBMS that runs in a shared-nothing MPP cluster.
+#' Ranked #1 in the TPC-H benckmark, it is considered the fastest analytical data warehouse available. A free edition
+#' can be downloaded from \url{https://www.exasol.com/portal}.
 #'
 #'
 #'
-#'
-#' @author EXASOL AG & Community
+#' @author Marcel Boldt, EXASOL & Community
 #'
 #' Maintainer: \packageMaintainer{exasol6}
 #'

@@ -4,7 +4,7 @@
 #include <stdlib.h> // atof()
 #include <Rcpp.h>
 
-#undef Realloc // Realloc & Free get overwritte by R.h; see http://stackoverflow.com/questions/11588765/using-rcpp-with-windows-specific-includes
+#undef Realloc // Realloc & Free get overwritten by R.h; see http://stackoverflow.com/questions/11588765/using-rcpp-with-windows-specific-includes
 #undef Free
 
 #include "exasockets/exasockets.h"

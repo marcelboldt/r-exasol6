@@ -1,18 +1,15 @@
 Package: exasol6
 Type: Package
-Title: What the Package Does in One 'Title Case' Line
-Version: 0.1
-Date: 2017-02-16
+Title: R interface and SDK for EXASOL DB.
+Version: 0.2
+Date: 2017-04-28
 Author: Marcel Boldt
 Maintainer: Marcel Boldt <marcel.boldt@exasol.com>
 Depends:
-    R (>= 3.3.0)
-Imports:
-    methods,
-	Rcpp
+    R (>= 3.3.0),
+    Rcpp (>= 0.12.9)
 LazyData: true
-Description: This package provides connectivity and more, to work with an EXASOL database within R. The connection to the server is implemented via JSON over websockets.
-License: GPL (>= 2)
-Imports: Rcpp (>= 0.12.9)
+Description: This package provides connectivity and SDK to work with an EXASOL database. The connection to the server is implemented via JSON over websockets.
+License: MIT
 LinkingTo: Rcpp
 RoxygenNote: 6.0.1
